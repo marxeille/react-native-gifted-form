@@ -1,34 +1,33 @@
-import React from 'react';
-import createReactClass from 'create-react-class';
-import PropTypes from 'prop-types';
+import React from "react";
+import createReactClass from "create-react-class";
+import PropTypes from "prop-types";
 import {
   View,
   Text,
   TouchableHighlight,
-  Navigator,
   Image,
   TouchableOpacity,
-  PixelRatio,
-} from 'react-native';
+  PixelRatio
+} from "react-native";
+import { Navigator } from "react-native-deprecated-custom-components";
+var WidgetMixin = require("../mixins/WidgetMixin");
 
-var WidgetMixin = require('../mixins/WidgetMixin');
+var GiftedFormManager = require("../GiftedFormManager");
+var TimerMixin = require("react-timer-mixin");
 
-var GiftedFormManager = require('../GiftedFormManager');
-var TimerMixin = require('react-timer-mixin');
-
-var moment = require('moment');
+var moment = require("moment");
 
 module.exports = createReactClass({
   mixins: [TimerMixin, WidgetMixin],
 
   getDefaultProps() {
     return {
-      type: 'ModalWidget',
+      type: "ModalWidget",
       scrollEnabled: true,
       disclosure: true,
       cancelable: false,
-      displayValue: '',
-      onClose: () => { }
+      displayValue: "",
+      onClose: () => {}
     };
   },
 
@@ -53,9 +52,9 @@ module.exports = createReactClass({
     if (this.props.disclosure === true) {
       return (
         <Image
-          style={this.getStyle('disclosure')}
-          resizeMode={'contain'}
-          source={require('../icons/disclosure.png')}
+          style={this.getStyle("disclosure")}
+          resizeMode={"contain"}
+          source={require("../icons/disclosure.png")}
         />
       );
     }
@@ -63,15 +62,11 @@ module.exports = createReactClass({
   },
 
   onPress() {
-
     // title={this.props.title} // @todo working  ?
 
     var _self = this;
 
-    var {
-      GiftedFormModal
-    } = require('../GiftedForm.js');
-
+    var { GiftedFormModal } = require("../GiftedForm.js");
 
     var route = {
       onClose: _self.onClose,
@@ -82,7 +77,6 @@ module.exports = createReactClass({
         return (
           <GiftedFormModal
             {...others}
-
             navigator={navigator}
             isModal={true}
             children={_self._childrenWithProps}
@@ -90,7 +84,7 @@ module.exports = createReactClass({
         );
       },
       getTitle() {
-        return _self.props.title || '';
+        return _self.props.title || "";
       },
       configureScene() {
         var sceneConfig = Navigator.SceneConfigs.FloatFromBottom;
@@ -112,10 +106,10 @@ module.exports = createReactClass({
                 style={{
                   width: 21,
                   marginLeft: 10,
-                  tintColor: '#097881',
+                  tintColor: "#097881"
                 }}
-                resizeMode={'contain'}
-                source={require('../icons/close.png')}
+                resizeMode={"contain"}
+                source={require("../icons/close.png")}
               />
             </TouchableOpacity>
           );
@@ -137,28 +131,30 @@ module.exports = createReactClass({
               style={{
                 width: 21,
                 marginRight: 10,
-                tintColor: '#097881',
+                tintColor: "#097881"
               }}
-              resizeMode={'contain'}
-              source={require('../icons/check.png')}
+              resizeMode={"contain"}
+              source={require("../icons/check.png")}
             />
           </TouchableOpacity>
         );
-      },
+      }
     };
 
     // console.log('this.props.openModal from modal widget');
     // console.log(typeof this.props.openModal);
 
     if (this.props.openModal === null) {
-      console.warn('GiftedForm: openModal prop is missing in GiftedForm component');
+      console.warn(
+        "GiftedForm: openModal prop is missing in GiftedForm component"
+      );
     } else {
       this.props.openModal(route);
     }
   },
 
   componentWillMount() {
-    this._childrenWithProps = React.Children.map(this.props.children, (child) => {
+    this._childrenWithProps = React.Children.map(this.props.children, child => {
       return React.cloneElement(child, {
         formStyles: this.props.formStyles,
         openModal: this.props.openModal,
@@ -169,25 +165,25 @@ module.exports = createReactClass({
         onValidation: this.props.onValidation,
         onValueChange: this.props.onValueChange,
 
-        onClose: this.onClose,
+        onClose: this.onClose
       });
     });
   },
 
   componentDidMount() {
     this.setState({
-      value: this._getDisplayableValue(),
+      value: this._getDisplayableValue()
     });
   },
 
   onClose(value, navigator = null) {
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       this.setState({
-        value: value,
+        value: value
       });
-    } else if (this.props.displayValue !== '') {
+    } else if (this.props.displayValue !== "") {
       this.setState({
-        value: this._getDisplayableValue(),
+        value: this._getDisplayableValue()
       });
     }
 
@@ -200,28 +196,55 @@ module.exports = createReactClass({
 
   refreshDisplayableValue() {
     this.setState({
-      value: this._getDisplayableValue(),
+      value: this._getDisplayableValue()
     });
   },
 
   _getDisplayableValue() {
-    if (this.props.displayValue !== '') {
-      if (typeof GiftedFormManager.stores[this.props.formName] !== 'undefined') {
-        if (typeof GiftedFormManager.stores[this.props.formName].values !== 'undefined') {
-          if (typeof GiftedFormManager.stores[this.props.formName].values[this.props.displayValue] !== 'undefined') {
-            if (typeof this.props.transformValue === 'function') {
-              return this.props.transformValue(GiftedFormManager.stores[this.props.formName].values[this.props.displayValue]);
-            } else if (GiftedFormManager.stores[this.props.formName].values[this.props.displayValue] instanceof Date) {
-              return moment(GiftedFormManager.stores[this.props.formName].values[this.props.displayValue]).calendar(null, {
-                sameDay: '[Today]',
-                nextDay: '[Tomorrow]',
-                nextWeek: 'dddd',
-                lastDay: '[Yesterday]',
-                lastWeek: '[Last] dddd'
+    if (this.props.displayValue !== "") {
+      if (
+        typeof GiftedFormManager.stores[this.props.formName] !== "undefined"
+      ) {
+        if (
+          typeof GiftedFormManager.stores[this.props.formName].values !==
+          "undefined"
+        ) {
+          if (
+            typeof GiftedFormManager.stores[this.props.formName].values[
+              this.props.displayValue
+            ] !== "undefined"
+          ) {
+            if (typeof this.props.transformValue === "function") {
+              return this.props.transformValue(
+                GiftedFormManager.stores[this.props.formName].values[
+                  this.props.displayValue
+                ]
+              );
+            } else if (
+              GiftedFormManager.stores[this.props.formName].values[
+                this.props.displayValue
+              ] instanceof Date
+            ) {
+              return moment(
+                GiftedFormManager.stores[this.props.formName].values[
+                  this.props.displayValue
+                ]
+              ).calendar(null, {
+                sameDay: "[Today]",
+                nextDay: "[Tomorrow]",
+                nextWeek: "dddd",
+                lastDay: "[Yesterday]",
+                lastWeek: "[Last] dddd"
               });
             }
-            if (typeof GiftedFormManager.stores[this.props.formName].values[this.props.displayValue] === 'string') {
-              return GiftedFormManager.stores[this.props.formName].values[this.props.displayValue].trim();
+            if (
+              typeof GiftedFormManager.stores[this.props.formName].values[
+                this.props.displayValue
+              ] === "string"
+            ) {
+              return GiftedFormManager.stores[this.props.formName].values[
+                this.props.displayValue
+              ].trim();
             }
           } else {
             // @todo merge with when not select menu
@@ -230,23 +253,28 @@ module.exports = createReactClass({
             // probably because it's a select menu
             // options of select menus are stored using the syntax name{value}, name{value}
             var values = GiftedFormManager.getValues(this.props.formName);
-            if (typeof values === 'object') {
-              if (typeof values[this.props.displayValue] !== 'undefined') {
-                if (typeof this.props.transformValue === 'function') {
-                  return this.props.transformValue(values[this.props.displayValue]);
+            if (typeof values === "object") {
+              if (typeof values[this.props.displayValue] !== "undefined") {
+                if (typeof this.props.transformValue === "function") {
+                  return this.props.transformValue(
+                    values[this.props.displayValue]
+                  );
                 } else {
                   if (Array.isArray(values[this.props.displayValue])) {
                     // @todo
                     // should return the title and not the value in case of select menu
-                    return values[this.props.displayValue].join(', ');
+                    return values[this.props.displayValue].join(", ");
                   } else if (values[this.props.displayValue] instanceof Date) {
-                    return moment(values[this.props.displayValue]).calendar(null, {
-                      sameDay: '[Today]',
-                      nextDay: '[Tomorrow]',
-                      nextWeek: 'dddd',
-                      lastDay: '[Yesterday]',
-                      lastWeek: '[Last] dddd'
-                    });
+                    return moment(values[this.props.displayValue]).calendar(
+                      null,
+                      {
+                        sameDay: "[Today]",
+                        nextDay: "[Tomorrow]",
+                        nextWeek: "dddd",
+                        lastDay: "[Yesterday]",
+                        lastWeek: "[Last] dddd"
+                      }
+                    );
                   } else {
                     return values[this.props.displayValue];
                   }
@@ -257,7 +285,7 @@ module.exports = createReactClass({
         }
       }
     }
-    return '';
+    return "";
   },
 
   render() {
@@ -268,17 +296,19 @@ module.exports = createReactClass({
             this.onPress();
           });
         }}
-        underlayColor={this.getStyle('underlayColor').pop()}
-
+        underlayColor={this.getStyle("underlayColor").pop()}
         {...this.props} // mainly for underlayColor
-
-        style={this.getStyle('rowContainer')}
+        style={this.getStyle("rowContainer")}
       >
-        <View style={this.getStyle('row')}>
+        <View style={this.getStyle("row")}>
           {this._renderImage()}
-          <Text numberOfLines={1} style={this.getStyle('modalTitle')}>{this.props.title}</Text>
-          <View style={this.getStyle('alignRight')}>
-            <Text numberOfLines={1} style={this.getStyle('modalValue')}>{this.state.value}</Text>
+          <Text numberOfLines={1} style={this.getStyle("modalTitle")}>
+            {this.props.title}
+          </Text>
+          <View style={this.getStyle("alignRight")}>
+            <Text numberOfLines={1} style={this.getStyle("modalValue")}>
+              {this.state.value}
+            </Text>
           </View>
           {this.renderDisclosure()}
         </View>
@@ -290,38 +320,38 @@ module.exports = createReactClass({
     rowImage: {
       height: 20,
       width: 20,
-      marginLeft: 10,
+      marginLeft: 10
     },
     rowContainer: {
-      backgroundColor: '#FFF',
+      backgroundColor: "#FFF",
       borderBottomWidth: 1 / PixelRatio.get(),
-      borderColor: '#c8c7cc',
+      borderColor: "#c8c7cc"
     },
-    underlayColor: '#c7c7cc',
+    underlayColor: "#c7c7cc",
     row: {
-      flexDirection: 'row',
+      flexDirection: "row",
       height: 44,
-      alignItems: 'center',
+      alignItems: "center"
     },
     disclosure: {
       // transform: [{rotate: '90deg'}],
       marginLeft: 10,
       marginRight: 10,
-      width: 11,
+      width: 11
     },
     modalTitle: {
       flex: 1,
       fontSize: 15,
-      color: '#000',
-      paddingLeft: 10,
+      color: "#000",
+      paddingLeft: 10
     },
     alignRight: {
-      alignItems: 'flex-end',
+      alignItems: "flex-end"
       // width: 110,
     },
     modalValue: {
       fontSize: 15,
-      color: '#c7c7cc',
-    },
-  },
+      color: "#c7c7cc"
+    }
+  }
 });
